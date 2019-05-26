@@ -48,6 +48,8 @@ func Setup() {
 				fmt.Println("Aborting...")
 				os.Exit(1)
 			}
+		} else {
+			panic(err)
 		}
 	} else if !ok {
 		panic(err)
