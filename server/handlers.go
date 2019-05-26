@@ -24,8 +24,6 @@ type Env struct {
 }
 
 func (e *Env) ShowIndex(w http.ResponseWriter, r *http.Request) {
-	user := r.Context().Value("AccountID")
-	fmt.Println(user)
 	w.Write([]byte("hello!"))
 }
 

@@ -28,8 +28,8 @@ import (
 // createCmd represents the create command
 var createCmd = &cobra.Command{
 	Use:   "create",
-	Short: "Creates a configuration file.",
-	Long:  `Creates a configuration file in the current folder.`,
+	Short: "Creates a configuration file in your home directory.",
+	Long:  `Creates a configuration file in your home directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		server.CreateConfig()
 	},
