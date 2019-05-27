@@ -100,17 +100,17 @@ func (e *Env) CreateAuthToken(w http.ResponseWriter, r *http.Request) {
 		StructScan(&user)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			http.Error(w, "Invalid username", http.StatusUnauthorized)
+			http.Error(w, "Invalid username or password", http.StatusUnauthorized)
 			return
 		}
-		fmt.Println(err)
 		http.Error(w, "Server error, try again", http.StatusInternalServerError)
 		return
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password),
 		[]byte(formPass)); err != nil {
-		http.Error(w, "Invalid password", http.StatusUnauthorized)
+		fmt.Println(err)
+		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
 		return
 	}
 

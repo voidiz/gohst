@@ -32,12 +32,12 @@ func CreateAccount(newUser string) {
 		panic(err)
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
+	hashed, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
 	if err != nil {
 		panic(err)
 	}
 
-	db.MustExec("INSERT INTO users (username, password) VALUES (?, ?)", newUser, hash)
+	db.MustExec("INSERT INTO users (username, password) VALUES (?, ?)", newUser, hashed)
 	fmt.Printf("Created user \"%s\".\nPassword:\n%s\n", newUser, pass)
 }
 
@@ -61,12 +61,12 @@ func RegeneratePassword(user string) {
 		panic(err)
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
+	hashed, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
 	if err != nil {
 		panic(err)
 	}
 
-	_, err = db.Exec("UPDATE users SET password=? WHERE username=?", hash, user)
+	_, err = db.Exec("UPDATE users SET password=? WHERE username=?", hashed, user)
 	if err != nil {
 		panic(err)
 	}
