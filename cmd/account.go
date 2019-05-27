@@ -21,8 +21,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -31,9 +29,9 @@ var accountCmd = &cobra.Command{
 	Use:   "account",
 	Short: "Account-related commands",
 	Long:  `Account-related actions such as deleting and creating accounts.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("account called")
-	},
+	// Run: func(cmd *cobra.Command, args []string) {
+	// 	fmt.Println("account called")
+	// },
 }
 
 func init() {

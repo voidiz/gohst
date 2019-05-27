@@ -25,8 +25,8 @@ import (
 	"github.com/voidiz/gohst/server"
 )
 
-// createCmd represents the create command
-var createCmd = &cobra.Command{
+// configCreateCmd represents the config create command
+var configCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Creates a configuration file in your home directory.",
 	Long:  `Creates a configuration file in your home directory.`,
@@ -36,7 +36,7 @@ var createCmd = &cobra.Command{
 }
 
 func init() {
-	configCmd.AddCommand(createCmd)
+	configCmd.AddCommand(configCreateCmd)
 
 	// Here you will define your flags and configuration settings.
 

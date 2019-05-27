@@ -136,6 +136,7 @@ CREATE TABLE user_files (
 	id int(11) NOT NULL AUTO_INCREMENT,
 	account_id int(11) NOT NULL,
 	name varchar(255) NOT NULL,
+	created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
 	PRIMARY KEY(id),
 	INDEX acc_ind (account_id),
