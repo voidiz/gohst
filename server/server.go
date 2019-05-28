@@ -59,7 +59,7 @@ func (s *Server) Run(development bool) {
 		r.Group(func(r chi.Router) {
 			r.Use(e.AuthMiddleware)
 			r.Post("/", e.UploadFile)
-			// r.Delete("/{filename:\\w+.\\w+}", e.DeleteFile)
+			r.Delete("/{filename:\\w+.\\w+}", e.DeleteFile)
 		})
 	})
 

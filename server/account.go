@@ -37,7 +37,8 @@ func CreateAccount(newUser string) {
 		panic(err)
 	}
 
-	db.MustExec("INSERT INTO users (username, password) VALUES (?, ?)", newUser, hashed)
+	db.MustExec("INSERT INTO users (username, password) VALUES (?, ?)",
+		newUser, hashed)
 	fmt.Printf("Created user \"%s\".\nPassword:\n%s\n", newUser, pass)
 }
 

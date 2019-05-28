@@ -5,11 +5,14 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"encoding/base64"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 
+	"github.com/go-chi/chi"
 	"github.com/jmoiron/sqlx"
 	"github.com/voidiz/gohst/tools"
 	"golang.org/x/crypto/bcrypt"
@@ -21,6 +24,10 @@ type Env struct {
 	MaxFileSize      int64
 	BlockedMimeTypes []string
 }
+
+type contextKey string
+
+const accountIDKey contextKey = "AccountID"
 
 func (e *Env) ShowIndex(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("hello!"))
@@ -66,7 +73,7 @@ func (e *Env) UploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	f, err := os.Create(e.StaticDir + "/" + fileName)
+	f, err := os.Create(filepath.Join(e.StaticDir, fileName))
 	defer f.Close()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -78,8 +85,64 @@ func (e *Env) UploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	e.DB.MustExec("INSERT INTO user_files (account_id, name) VALUES (?, ?)",
+		r.Context().Value(accountIDKey), fileName)
+
+	var scheme string
+	if r.TLS != nil {
+		scheme = "https"
+	} else {
+		scheme = "http"
+	}
+
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Uploaded file!"))
+	resp := fmt.Sprintf("%s://%s/%s", scheme, r.Host, fileName)
+	w.Write([]byte(resp))
+}
+
+func (e *Env) DeleteFile(w http.ResponseWriter, r *http.Request) {
+	var (
+		userCheck string
+		fileCheck string
+		err       error
+	)
+	fileName := chi.URLParam(r, "filename")
+
+	err = e.DB.Get(&userCheck, "SELECT username FROM users WHERE id=?",
+		r.Context().Value(accountIDKey))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			http.Error(w, "You are not the owner of the file", http.StatusUnauthorized)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = e.DB.Get(&fileCheck, "SELECT name FROM user_files WHERE name=?", fileName)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			http.Error(w, "Invalid filename", http.StatusUnauthorized)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	_, err = e.DB.Exec("DELETE FROM user_files WHERE name=?",
+		fileName)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := os.Remove(filepath.Join(e.StaticDir, fileName)); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully deleted " + fileName))
 }
 
 func (e *Env) CreateAuthToken(w http.ResponseWriter, r *http.Request) {
@@ -142,7 +205,7 @@ func (e *Env) AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "AccountID", au.AccountID)
+		ctx := context.WithValue(r.Context(), accountIDKey, au.AccountID)
 
 		// Next handler
 		next.ServeHTTP(w, r.WithContext(ctx))

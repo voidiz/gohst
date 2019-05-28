@@ -99,7 +99,7 @@ var configText = `
 ## server configuration ##
 ##########################
 # domain: e.g. mywebsite.com 
-# staticDir: /path/to/static/dir (defaults to "static" in the current directory)
+# staticDir: /path/to/static/dir (defaults to "static" in the home directory)
 # port: defaults to 80
 # maxFileSize: bytes, defaults to 5000000 (5 MB)
 # blockedMimeTypes: 
