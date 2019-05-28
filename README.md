@@ -1,5 +1,5 @@
 # gohst
-a lightweight, (almost) portable file server
+a lightweight, (almost) portable file hosting and sharing service
 
 ## requirements
 - `mysql 5.7+` or `mariadb 10.3+`
