@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"encoding/base64"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -109,7 +108,6 @@ func (e *Env) CreateAuthToken(w http.ResponseWriter, r *http.Request) {
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password),
 		[]byte(formPass)); err != nil {
-		fmt.Println(err)
 		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
 		return
 	}

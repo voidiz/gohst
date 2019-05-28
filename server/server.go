@@ -11,6 +11,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/viper"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 // Server defines the database connection and the HTTP server
@@ -31,9 +32,8 @@ func Initialize() *sqlx.DB {
 	return db
 }
 
-// TODO: add mode for development and production
 // Run starts the server
-func (s *Server) Run(mode string) {
+func (s *Server) Run(development bool) {
 	// Open DB and config
 	s.DB = Initialize()
 
@@ -66,5 +66,15 @@ func (s *Server) Run(mode string) {
 	// Scanner to delete old files
 	// go tools.StartScanner(e.StaticDir, "1s")
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", viper.GetInt("port")), s.Router))
+	if development {
+		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", viper.GetInt("port")),
+			s.Router))
+	}
+
+	domain := viper.GetString("domain")
+	if domain == "" {
+		log.Fatal("Missing domain, please specify one in the configuration file.")
+	}
+
+	log.Fatal(http.Serve(autocert.NewListener(domain), s.Router))
 }

@@ -32,8 +32,12 @@ var serveCmd = &cobra.Command{
 	Short: "Start the server",
 	Long:  `Starts the server using the supplied settings in the configuration file.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		dev, err := cmd.Flags().GetBool("development")
+		if err != nil {
+			panic(err)
+		}
 		var s server.Server
-		s.Run("test")
+		s.Run(dev)
 	},
 }
 
@@ -48,6 +52,7 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// serveCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	serveCmd.Flags().BoolP("development", "d", false, "Start the development server")
 
 	// Default configuration
 	viper.SetDefault("port", 80)
