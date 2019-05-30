@@ -5,8 +5,8 @@ a lightweight, (almost) portable file hosting and sharing service
 - `mysql 5.7+` or `mariadb 10.3+`
 - `go 1.11+` (if building from source)
 
-## building
-```go install github.com/voidiz/gohst```
+## building and installing
+```go get github.com/voidiz/gohst```
 
 ## quick start
 1. `gohst config create` - Creates the configuration file in your home directory
