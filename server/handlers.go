@@ -67,6 +67,11 @@ func (e *Env) UploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if e.fileBlocked(http.DetectContentType(fileBytes)) {
+		http.Error(w, "File not allowed!", http.StatusUnsupportedMediaType)
+		return
+	}
+
 	fileName, err := tools.GenerateFileName(e.DB, fileBytes, header.Filename)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
