@@ -58,10 +58,11 @@ func Setup() {
 	db.MustExec(dbStructure)
 	fmt.Println("Successfully setup the database!")
 
-	if err := os.Mkdir(viper.GetString("staticDir"), 0755); err != nil {
+	staticDir := viper.GetString("staticDir")
+	if err := os.Mkdir(staticDir, 0755); err != nil {
 		panic(err)
 	} else {
-		fmt.Println("Created static file directory!")
+		fmt.Printf("Created static file directory %s!\n", staticDir)
 	}
 
 	defer db.Close()
@@ -85,26 +86,21 @@ func confirmAction(action string) bool {
 	return false
 }
 
-var configText = `
-## uncomment the following lines and fill in the
-## necessary information
-
-######################
-## db configuration ##
-######################
+var configText = `##############################################
+## 			  db configuration				##
+##  *note: db has to be on localhost:3306	##
+##############################################
 # dbUser:
 # dbPass:
 
-##########################
-## server configuration ##
-##########################
-# domain: e.g. mywebsite.com 
-# staticDir: /path/to/static/dir (defaults to "static" in the home directory)
-# port: defaults to 80
-# maxFileSize: bytes, defaults to 5000000 (5 MB)
-# blockedMimeTypes: 
-# - list of blocked mime types
-# - defaults to 
+##############################################
+## 			 server configuration			##
+##############################################
+# domain: mywebsite.com
+# staticDir: /home/user/gohst-static-files
+# port: 80
+# maxFileSize: 5000000		# bytes, defaults to 5 MB
+# blockedMimeTypes:
 # - application/x-dosexec
 # - application/x-executable`
 

@@ -66,8 +66,10 @@ func (s *Server) Run(development bool) {
 	// Scanner to delete old files
 	// go tools.StartScanner(e.StaticDir, "1s")
 
+	port := viper.GetInt("port")
 	if development {
-		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", viper.GetInt("port")),
+		fmt.Printf("Starting development server on http://localhost:%v\n", port)
+		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port),
 			s.Router))
 	}
 
@@ -75,6 +77,8 @@ func (s *Server) Run(development bool) {
 	if domain == "" {
 		log.Fatal("Missing domain, please specify one in the configuration file.")
 	}
+
+	fmt.Printf("Starting server on https://%s:%v\n", domain, port)
 
 	log.Fatal(http.Serve(autocert.NewListener(domain), s.Router))
 }
